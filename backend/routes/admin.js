@@ -1,5 +1,5 @@
 // Security: Admin Routes with MongoDB
-
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
@@ -60,7 +60,15 @@ router.get('/users', authMiddleware, roleMiddleware('admin'), async (req, res) =
 // Change user role - Admin only
 router.put('/users/:id/role', authMiddleware, roleMiddleware('admin'), async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = String(req.params.id).trim();
+
+if (!mongoose.isObjectIdOrHexString(userId)) {
+  return res.status(400).json({
+    error: 'Invalid user ID'
+  });
+}
+
+const safeUserId = new mongoose.Types.ObjectId(userId);
     const { role } = req.body;
 
     console.log(`[ADMIN] Attempting to change role for user ${userId} to ${role}`);
@@ -75,8 +83,8 @@ router.put('/users/:id/role', authMiddleware, roleMiddleware('admin'), async (re
     }
 
     // Update the user
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
+   const updatedUser = await User.findByIdAndUpdate(
+  safeUserId,
       { role: role },
       { new: true, runValidators: true }
     );
@@ -113,13 +121,19 @@ router.put('/users/:id/role', authMiddleware, roleMiddleware('admin'), async (re
 router.delete('/users/:id', authMiddleware, roleMiddleware('admin'), async (req, res) => {
   try {
     const userId = String(req.params.id).trim();
+    if (!mongoose.isObjectIdOrHexString(userId)) {
+  return res.status(400).json({
+    error: 'Invalid user ID'
+  });
+}
+
+const safeUserId = new mongoose.Types.ObjectId(userId);
 
     if (String(req.user.id) === userId) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
 
-    const deletedUser = await User.findByIdAndDelete(userId);
-
+const deletedUser = await User.findByIdAndDelete(safeUserId);
     if (!deletedUser) {
       return res.status(404).json({ error: 'User not found' });
     }
