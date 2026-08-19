@@ -104,7 +104,7 @@ app.use((req, res, next) => {
 // Security: General API rate limiting
 app.use('/api', apiLimiter);
 
-// CSRF token endpoint
+// Security: CSRF token bootstrap endpoint
 app.get('/api/csrf-token', (req, res) => {
   const csrfToken = generateCsrfToken(req, res);
 
@@ -113,12 +113,19 @@ app.get('/api/csrf-token', (req, res) => {
   });
 });
 
+// Security: Enforce CSRF protection on state-changing requests
+app.use((req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+
+  return doubleCsrfProtection(req, res, next);
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', doubleCsrfProtection, userRoutes);
-app.use('/api/admin', doubleCsrfProtection, adminRoutes);
-
-
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
 // Home route - serves index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));

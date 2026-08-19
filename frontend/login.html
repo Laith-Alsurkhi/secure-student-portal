@@ -99,11 +99,22 @@
         }
 
       try {
+        const csrfResponse = await fetch('/api/csrf-token', {
+  method: 'GET',
+  credentials: 'include'
+});
+
+if (!csrfResponse.ok) {
+  throw new Error('Failed to get CSRF token');
+}
+
+const csrfData = await csrfResponse.json();
         const response = await fetch('/api/auth/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+         headers: {
+  'Content-Type': 'application/json',
+  'x-csrf-token': csrfData.csrfToken
+},
           credentials: 'include',body: JSON.stringify({email,password,turnstileToken})});
 
         const data = await response.json();
