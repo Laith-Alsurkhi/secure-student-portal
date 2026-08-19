@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
 
 // Import database and routes
 const db = require('./database');
@@ -16,6 +17,15 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many requests, please try again later.'
+  }
+});
 
 // Security: Validate required environment variables
 if (!process.env.JWT_SECRET) {
@@ -69,7 +79,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Security: General API rate limiting
 // Routes
+app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
