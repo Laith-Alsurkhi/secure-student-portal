@@ -92,6 +92,20 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
+// Security: CSRF token bootstrap endpoint
+app.get('/api/csrf-token', (req, res) => {
+  const csrfToken = generateCsrfToken(req, res);
+  res.json({ csrfToken });
+});
+
+// Security: Enforce CSRF protection on state-changing requests
+app.use((req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+  return doubleCsrfProtection(req, res, next);
+});
+
 // Security: Serve frontend files (Simple static file serving)
 app.use(express.static(path.join(__dirname, '../frontend')));
 
