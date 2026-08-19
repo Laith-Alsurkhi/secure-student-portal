@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Student Portal - Application Security</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <h1>🔐 Secure Student Portal</h1>
+    <div class="nav-buttons">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <h1>Welcome to Secure Student Portal</h1>
+      <p>A secure web application demonstrating Application Security best practices for an educational course.</p>
+      
+      <div class="hero-buttons">
+        <a href="signup.html" class="btn">Create Account</a>
+        <a href="login.html" class="btn">Sign In</a>
+      </div>
+    </div>
+
+    <!-- Features Card -->
+    <div class="card">
+      <h2>Security Features Implemented</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <h3>🔐 Authentication & Authorization</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>JWT token-based authentication</li>
+            <li>bcrypt password hashing</li>
+            <li>Role-based access control</li>
+            <li>24-hour token expiration</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>🛡️ Input Validation & Sanitization</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>Email format validation</li>
+            <li>Password strength requirements</li>
+            <li>Input sanitization (XSS prevention)</li>
+            <li>Phone number validation</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>🔒 Data Protection</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>AES-256 encryption for sensitive fields</li>
+            <li>HTTPS headers via Helmet.js</li>
+            <li>CORS with restricted origins</li>
+            <li>Secure environment variables</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>⚔️ Attack Prevention</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>Rate limiting on login/signup</li>
+            <li>Audit logging for security events</li>
+            <li>Error handling without info disclosure</li>
+            <li>User enumeration prevention</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Stack Card -->
+    <div class="card">
+      <h2>Technology Stack</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+          <h3>Backend</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>Node.js + Express.js</li>
+            <li>SQLite Database</li>
+            <li>JWT Authentication</li>
+            <li>bcrypt Password Hashing</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Frontend</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>HTML5</li>
+            <li>CSS3</li>
+            <li>Vanilla JavaScript</li>
+            <li>localStorage for tokens</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Security Libraries</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>helmet.js (HTTP headers)</li>
+            <li>cors (Cross-origin requests)</li>
+            <li>express-rate-limit (Brute force)</li>
+            <li>validator (Input validation)</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Security Tools</h3>
+          <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+            <li>GitHub CodeQL</li>
+            <li>Snyk vulnerability scanning</li>
+            <li>STRIDE threat modeling</li>
+            <li>DREAD risk assessment</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Start Card -->
+    <div class="card">
+      <h2>Quick Start</h2>
+      
+      <h3>Default Admin Account</h3>
+      <p>
+        <strong>Email:</strong> admin@portal.com<br>
+        <strong>Password:</strong> Admin@12345
+      </p>
+
+      <h3 style="margin-top: 1.5rem;">Getting Started</h3>
+      <ol style="margin-left: 1rem;">
+        <li><strong>Sign Up:</strong> Create a new account using the Sign Up page</li>
+        <li><strong>Login:</strong> Use your credentials to log in</li>
+        <li><strong>Dashboard:</strong> View and update your profile</li>
+        <li><strong>Admin Access:</strong> Login with admin account to manage users</li>
+      </ol>
+
+      <div style="background-color: #fff3cd; padding: 1rem; border-radius: 4px; margin-top: 1.5rem; border-left: 4px solid #ffc107;">
+        <strong>⚠️ Security Note:</strong> This is a demo application for educational purposes. Never use these credentials in production.
+      </div>
+    </div>
+
+    <!-- Course Info -->
+    <div class="card">
+      <h2>About This Project</h2>
+      <p>
+        This project is designed for an <strong>Application Security course</strong> to demonstrate practical implementation 
+        of security best practices. It covers authentication, authorization, input validation, data encryption, and 
+        attack prevention techniques.
+      </p>
+      <p style="margin-top: 1rem;">
+        The application uses a simple but secure architecture that emphasizes security over advanced features, 
+        making it ideal for educational purposes and learning security fundamentals.
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Secure Student Portal - Application Security Course</p>
+    <p>Educational Project | Built with security best practices</p>
+  </footer>
+</body>
+</html>

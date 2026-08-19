@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Secure Student Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <h1>🔐 Secure Student Portal</h1>
+    <div class="nav-buttons">
+      <span id="userInfo" style="color: #3498db; margin-right: 1rem;"></span>
+      <button id="logoutBtn" class="btn" style="background-color: #e74c3c;">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Welcome Card -->
+    <div class="card">
+      <h2>Welcome, <span id="userName">User</span>! 👋</h2>
+      <p id="welcomeMessage" style="font-size: 1.1rem; color: #27ae60;">You are successfully logged in.</p>
+    </div>
+
+    <!-- Messages -->
+    <div id="successMessage" class="message success"></div>
+    <div id="errorMessage" class="message error"></div>
+
+    <!-- Profile Card -->
+    <div class="card">
+      <h2>Your Profile</h2>
+
+      <!-- View Mode -->
+      <div id="viewMode" class="view-mode active">
+        <div class="profile-info">
+          <div class="info-row">
+            <span class="label">Name:</span>
+            <span id="displayName">-</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span id="displayEmail">-</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Student ID:</span>
+            <span id="displayStudentId">-</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Phone Number:</span>
+            <span id="displayPhone">-</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Role:</span>
+            <span id="displayRole">-</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Member Since:</span>
+            <span id="displayCreatedAt">-</span>
+          </div>
+        </div>
+        <button id="editBtn" class="btn" style="width: 100%;">Edit Profile</button>
+      </div>
+
+      <!-- Edit Mode -->
+      <div id="editMode" class="edit-mode">
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="editName">Full Name</label>
+            <input 
+              type="text" 
+              id="editName" 
+              name="name" 
+              placeholder="Enter your full name" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="editPhone">Phone Number</label>
+            <input 
+              type="tel" 
+              id="editPhone" 
+              name="phone" 
+              placeholder="Enter your phone number" 
+              required
+            >
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn success" style="flex: 1;">Save Changes</button>
+            <button type="button" id="cancelBtn" class="btn" style="flex: 1; background-color: #95a5a6;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Security Info -->
+    <div class="card">
+      <h2>Security Information</h2>
+      
+      <div style="background-color: #e8f5e9; padding: 1rem; border-radius: 4px; border-left: 4px solid #27ae60;">
+        <strong>✓ Your data is protected</strong>
+        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+          <li>Sensitive information is encrypted (Student ID, Phone Number)</li>
+          <li>Authentication uses JWT tokens with expiration</li>
+          <li>All passwords are hashed with bcrypt</li>
+          <li>Your session is secure and monitored</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Secure Student Portal - Application Security Course</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

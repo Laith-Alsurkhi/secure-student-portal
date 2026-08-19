@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Secure Student Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <h1>🔐 Secure Student Portal - Admin</h1>
+    <div class="nav-buttons">
+      <span id="userInfo" style="color: #3498db; margin-right: 1rem;"></span>
+      <button id="logoutBtn" class="btn" style="background-color: #e74c3c;">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Welcome Card -->
+    <div class="card">
+      <h2>Admin Dashboard 👨‍💼</h2>
+      <p style="font-size: 1.1rem; color: #e74c3c;">
+        <strong>You have administrative access to this system.</strong>
+      </p>
+    </div>
+
+    <!-- Messages -->
+    <div id="successMessage" class="message success"></div>
+    <div id="errorMessage" class="message error"></div>
+
+    <!-- User Management Card -->
+    <div class="card">
+      <h2>User Management</h2>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <button id="refreshBtn" class="btn">🔄 Refresh</button>
+        <button id="auditBtn" class="btn" style="background-color: #9b59b6;">📋 View Audit Logs</button>
+      </div>
+
+      <!-- Users Table -->
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Student ID</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Member Since</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center;">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Audit Logs Modal -->
+    <div id="auditModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+      <div style="background-color: white; margin: 2rem auto; padding: 2rem; border-radius: 8px; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2>Audit Logs</h2>
+          <button id="closeAuditBtn" style="background-color: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 1rem;">Close</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>User Email</th>
+                <th>IP Address</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="auditLogsBody">
+              <tr>
+                <td colspan="4" style="text-align: center;">Loading audit logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Management Info -->
+    <div class="card">
+      <h2>Admin Functions</h2>
+      
+      <div style="background-color: #fff3cd; padding: 1rem; border-radius: 4px; border-left: 4px solid #ffc107;">
+        <strong>⚠️ Admin Privileges:</strong>
+        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+          <li><strong>View All Users:</strong> See all registered users and their information</li>
+          <li><strong>Manage Roles:</strong> Change user roles between "user" and "admin"</li>
+          <li><strong>Delete Users:</strong> Remove user accounts from the system</li>
+          <li><strong>View Audit Logs:</strong> Monitor all security-related actions</li>
+          <li><strong>Security Monitor:</strong> Track login attempts and admin actions</li>
+        </ul>
+      </div>
+
+      <div style="background-color: #f8d7da; padding: 1rem; border-radius: 4px; border-left: 4px solid #dc3545; margin-top: 1rem;">
+        <strong>⚠️ Important:</strong>
+        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+          <li>Admin actions are logged for security and compliance</li>
+          <li>Be careful when deleting users - this action cannot be undone</li>
+          <li>Never share your admin credentials</li>
+          <li>Always use strong passwords for admin accounts</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Secure Student Portal - Application Security Course</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/auth.js?v=10"></script>
+  <script src="js/admin.js?v=10"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Secure Student Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <h1>🔐 Secure Student Portal</h1>
+    <div class="nav-buttons">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="card" style="max-width: 500px; margin: 3rem auto;">
+      <h2>User Login</h2>
+
+      <!-- Messages -->
+      <div id="successMessage" class="message success"></div>
+      <div id="errorMessage" class="message error"></div>
+
+     
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="Enter your email" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter your password" 
+            required
+          >
+        </div>
+
+         <div class="cf-turnstile" data-sitekey="0x4AAAAAAEVcAOyCuG0hHNaE"></div>
+
+        <button type="submit" class="btn" style="width: 100%; padding: 1rem;">Login</button>
+      </form>
+
+      <!-- Links -->
+      <div style="margin-top: 2rem; text-align: center;">
+        <p>
+          Don't have an account? 
+          <a href="signup.html" style="color: #3498db; text-decoration: none; font-weight: bold;">Sign up here</a>
+        </p>
+      </div>
+
+      <!-- Test Credentials -->
+      <div style="background-color: #e3f2fd; padding: 1rem; border-radius: 4px; margin-top: 1.5rem; border-left: 4px solid #2196F3;">
+        <strong>Test Credentials:</strong><br>
+        Email: admin@portal.com<br>
+        Password: Admin@12345
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Secure Student Portal - Application Security Course</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="js/auth.js"></script>
+  <script>
+    // Security: Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+    if (!turnstileToken) {
+      document.getElementById('errorMessage').textContent ='Please complete the security verification.';
+       document.getElementById('errorMessage').style.display = 'block';
+         return;
+        }
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',body: JSON.stringify({email,password,turnstileToken})});
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store non-sensitive user information for UI
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Show success message
+          document.getElementById('successMessage').textContent = 'Login successful! Redirecting...';
+          document.getElementById('successMessage').style.display = 'block';
+
+          // Redirect based on role
+          setTimeout(() => {
+            if (data.user.role === 'admin') {
+              window.location.href = 'admin.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 1500);
+        } else {
+          // Security: Generic error message
+          document.getElementById('errorMessage').textContent = data.error || 'Login failed. Please try again.';
+          document.getElementById('errorMessage').style.display = 'block';
+          if (window.turnstile) {turnstile.reset();}
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        document.getElementById('errorMessage').textContent = 'Connection error. Please try again.';
+        document.getElementById('errorMessage').style.display = 'block';
+        if (window.turnstile) {turnstile.reset();}
+      }
+    });
+  </script>
+</body>
+</html>
