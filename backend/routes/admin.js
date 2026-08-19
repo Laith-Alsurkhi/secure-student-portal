@@ -69,23 +69,33 @@ if (!mongoose.isObjectIdOrHexString(userId)) {
 }
 
 const safeUserId = new mongoose.Types.ObjectId(userId);
-    const { role } = req.body;
+    const requestedRole = req.body.role;
 
-    console.log(`[ADMIN] Attempting to change role for user ${userId} to ${role}`);
+let safeRole;
 
-    if (!role || !['user', 'admin'].includes(role)) {
-      return res.status(400).json({ error: 'Invalid role. Must be "user" or "admin"' });
-    }
+if (requestedRole === 'admin') {
+  safeRole = 'admin';
+} else if (requestedRole === 'user') {
+  safeRole = 'user';
+} else {
+  return res.status(400).json({
+    error: 'Invalid role. Must be "user" or "admin"'
+  });
+}
+
+console.log(
+  `[ADMIN] Attempting to change role for user ${userId} to ${safeRole}`
+);
 
     // Check if trying to demote self
-    if (req.user.id.toString() === userId.toString() && role !== 'admin') {
+    if (req.user.id.toString() === userId.toString() && safeRole !== 'admin') {
       return res.status(400).json({ error: 'Cannot demote yourself from admin' });
     }
 
     // Update the user
    const updatedUser = await User.findByIdAndUpdate(
   safeUserId,
-      { role: role },
+      { role: safeRole },
       { new: true, runValidators: true }
     );
 
@@ -98,7 +108,7 @@ const safeUserId = new mongoose.Types.ObjectId(userId);
 
     // Log the audit
     await AuditLog.create({
-      action: `change_role_to_${role}_for_${updatedUser.email}`,
+      action: `change_role_to_${safeRole}_for_${updatedUser.email}`,
       user_email: req.user.email,
       ip_address: req.ip
     });
