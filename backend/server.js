@@ -66,13 +66,13 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        scriptSrc: ["'self'","'unsafe-inline'","https://challenges.cloudflare.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://challenges.cloudflare.com"],
         scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "https:"],
-        frameSrc: ["'self'","https://challenges.cloudflare.com"],
-        connectSrc: ["'self'","https://challenges.cloudflare.com"
-],
+        frameSrc: ["'self'", "https://challenges.cloudflare.com"],
+        connectSrc: ["'self'", "https://challenges.cloudflare.com"
+        ],
       },
     },
   })
@@ -84,13 +84,28 @@ app.use(
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Set in .env
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-allowedHeaders: ['Content-Type','Authorization','x-csrf-token']})
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token']
+  })
 );
 
-// Security: Body parser middleware with size limits
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
+
+// Security: CSRF token bootstrap endpoint
+app.get('/api/csrf-token', (req, res) => {
+  const csrfToken = generateCsrfToken(req, res);
+  res.json({ csrfToken });
+});
+
+// Security: Enforce CSRF protection on state-changing requests
+app.use((req, res, next) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+
+  return doubleCsrfProtection(req, res, next);
+});
 
 // Security: Serve frontend files (Simple static file serving)
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -104,23 +119,6 @@ app.use((req, res, next) => {
 // Security: General API rate limiting
 app.use('/api', apiLimiter);
 
-// Security: CSRF token bootstrap endpoint
-app.get('/api/csrf-token', (req, res) => {
-  const csrfToken = generateCsrfToken(req, res);
-
-  res.json({
-    csrfToken
-  });
-});
-
-// Security: Enforce CSRF protection on state-changing requests
-app.use((req, res, next) => {
-  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-    return next();
-  }
-
-  return doubleCsrfProtection(req, res, next);
-});
 
 // Routes
 app.use('/api/auth', authRoutes);
