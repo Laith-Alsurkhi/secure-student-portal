@@ -11,18 +11,21 @@ function getCurrentUser() {
 // Security: Logout user and clear session
 async function logout() {
   try {
-    await fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include'
+    const response = await apiCall('/api/auth/logout', {
+      method: 'POST'
     });
+
+    if (!response || !response.ok) {
+      throw new Error('Logout failed');
+    }
   } catch (error) {
     console.error('Logout error:', error);
+    return;
   }
 
   localStorage.removeItem('user');
   window.location.href = 'index.html';
 }
-
 // Security: Redirect to login if not authenticated
 async function requireAuth() {
   try {
