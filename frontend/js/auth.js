@@ -79,10 +79,27 @@ async function requireAdmin() {
 
 // Security: API call using HttpOnly session cookie 
 async function apiCall(url, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers
   };
+
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    const csrfResponse = await fetch('/api/csrf-token', {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    if (!csrfResponse.ok) {
+      throw new Error('Failed to get CSRF token');
+    }
+
+    const csrfData = await csrfResponse.json();
+
+    headers['x-csrf-token'] = csrfData.csrfToken;
+  }
 
   const response = await fetch(url, {
     ...options,

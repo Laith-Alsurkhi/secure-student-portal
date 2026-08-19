@@ -8,6 +8,7 @@ const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const { doubleCsrf } = require('csrf-csrf');
 
 // Import database and routes
 const db = require('./database');
@@ -36,7 +37,29 @@ if (!process.env.JWT_SECRET) {
 if (!process.env.ENCRYPTION_KEY) {
   console.warn('WARNING: ENCRYPTION_KEY not set in .env, using default insecure key');
 }
+const {
+  generateCsrfToken,
+  doubleCsrfProtection
+} = doubleCsrf({
+  getSecret: () => process.env.CSRF_SECRET || process.env.JWT_SECRET,
 
+  getSessionIdentifier: (req) => {
+    return req.cookies?.auth_token || 'anonymous';
+  },
+
+  cookieName: 'x-csrf-token',
+
+  cookieOptions: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/'
+  },
+
+  getCsrfTokenFromRequest: (req) => {
+    return req.headers['x-csrf-token'];
+  }
+});
 // Security: Helmet middleware - Sets secure HTTP headers
 // Allow unsafe-inline for development
 app.use(
@@ -61,8 +84,7 @@ app.use(
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Set in .env
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  })
+allowedHeaders: ['Content-Type','Authorization','x-csrf-token']})
 );
 
 // Security: Body parser middleware with size limits
@@ -80,11 +102,22 @@ app.use((req, res, next) => {
 });
 
 // Security: General API rate limiting
-// Routes
 app.use('/api', apiLimiter);
+
+// CSRF token endpoint
+app.get('/api/csrf-token', (req, res) => {
+  const csrfToken = generateCsrfToken(req, res);
+
+  res.json({
+    csrfToken
+  });
+});
+
+// Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/user', doubleCsrfProtection, userRoutes);
+app.use('/api/admin', doubleCsrfProtection, adminRoutes);
+
 
 // Home route - serves index.html
 app.get('/', (req, res) => {
