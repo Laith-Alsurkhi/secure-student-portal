@@ -62,30 +62,30 @@ router.put('/users/:id/role', authMiddleware, roleMiddleware('admin'), async (re
   try {
     const userId = String(req.params.id).trim();
 
-if (!mongoose.isObjectIdOrHexString(userId)) {
-  return res.status(400).json({
-    error: 'Invalid user ID'
-  });
-}
+    if (!mongoose.isObjectIdOrHexString(userId)) {
+      return res.status(400).json({
+        error: 'Invalid user ID'
+      });
+    }
 
-const safeUserId = new mongoose.Types.ObjectId(userId);
+    const safeUserId = new mongoose.Types.ObjectId(userId);
     const requestedRole = req.body.role;
 
-let safeRole;
+    let safeRole;
 
-if (requestedRole === 'admin') {
-  safeRole = 'admin';
-} else if (requestedRole === 'user') {
-  safeRole = 'user';
-} else {
-  return res.status(400).json({
-    error: 'Invalid role. Must be "user" or "admin"'
-  });
-}
+    if (requestedRole === 'admin') {
+      safeRole = 'admin';
+    } else if (requestedRole === 'user') {
+      safeRole = 'user';
+    } else {
+      return res.status(400).json({
+        error: 'Invalid role. Must be "user" or "admin"'
+      });
+    }
 
-console.log(
-  `[ADMIN] Attempting to change role for user ${userId} to ${safeRole}`
-);
+    console.log(
+      `[ADMIN] Attempting to change role for user ${userId} to ${safeRole}`
+    );
 
     // Check if trying to demote self
     if (req.user.id.toString() === userId.toString() && safeRole !== 'admin') {
@@ -93,8 +93,8 @@ console.log(
     }
 
     // Update the user
-   const updatedUser = await User.findByIdAndUpdate(
-  safeUserId,
+    const updatedUser = await User.findByIdAndUpdate(
+      safeUserId,
       { role: safeRole },
       { new: true, runValidators: true }
     );
@@ -113,7 +113,7 @@ console.log(
       ip_address: req.ip
     });
 
-    res.json({ 
+    res.json({
       message: 'User role updated successfully',
       user: {
         id: updatedUser._id,
@@ -132,18 +132,18 @@ router.delete('/users/:id', authMiddleware, roleMiddleware('admin'), async (req,
   try {
     const userId = String(req.params.id).trim();
     if (!mongoose.isObjectIdOrHexString(userId)) {
-  return res.status(400).json({
-    error: 'Invalid user ID'
-  });
-}
+      return res.status(400).json({
+        error: 'Invalid user ID'
+      });
+    }
 
-const safeUserId = new mongoose.Types.ObjectId(userId);
+    const safeUserId = new mongoose.Types.ObjectId(userId);
 
     if (String(req.user.id) === userId) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
 
-const deletedUser = await User.findByIdAndDelete(safeUserId);
+    const deletedUser = await User.findByIdAndDelete(safeUserId);
     if (!deletedUser) {
       return res.status(404).json({ error: 'User not found' });
     }

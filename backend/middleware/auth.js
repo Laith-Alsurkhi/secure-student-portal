@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../database');
 
 const authMiddleware = async (req, res, next) => {
-const token = req.cookies.auth_token;
+  const token = req.cookies.auth_token;
   if (!token) {
-    return res.status(401).json({error: 'Unauthorized: No session provided' });
+    return res.status(401).json({ error: 'Unauthorized: No session provided' });
   }
 
   try {

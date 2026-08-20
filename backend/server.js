@@ -152,19 +152,19 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`
-  ╔══════════════════════════════════════════════════════════════╗
-  ║                                                              ║
-  ║     🔐 Secure Student Portal - Application Security         ║
-  ║                                                              ║
-  ║     Server running at http://localhost:${PORT}                       ║
-  ║                                                              ║
-  ║     Frontend: http://localhost:${PORT}                              ║
-  ║                                                              ║
-  ║     Default Admin:                                           ║
-  ║     Email: admin@portal.com                                  ║
-  ║     Password: Admin@12345                                    ║
-  ║                                                              ║
-  ╚══════════════════════════════════════════════════════════════╝
++--------------------------------------------------------------+
+|                                                              |
+|     Secure Student Portal - Application Security             |
+|                                                              |
+|     Server running at http://localhost:${PORT}                  |
+|                                                              |
+|     Frontend: http://localhost:3000                          |
+|                                                              |
+|     Default Admin:                                           |
+|     Email: admin@portal.com                                  |
+|     Password: Admin@12345                                    |
+|                                                              |
++--------------------------------------------------------------+
   `);
 });
 

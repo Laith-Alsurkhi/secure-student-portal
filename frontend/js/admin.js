@@ -88,9 +88,9 @@ function displayUsers(users) {
       roleSelect.addEventListener('change', (e) => {
         const currentRole = e.target.dataset.currentRole;
         const newRole = e.target.value;
-        
+
         if (currentRole === newRole) return;
-        
+
         showRoleConfirmation(user.id, user.email, newRole, (confirmed) => {
           if (confirmed) {
             changeUserRole(user.id, newRole);
@@ -153,14 +153,14 @@ async function changeUserRole(userId, newRole) {
 
     if (response.ok) {
       showSuccess('User role updated successfully!');
-      
+
       // Update the select element immediately
       const roleSelect = document.getElementById(`role-${userIdStr}`);
       if (roleSelect) {
         roleSelect.value = newRole;
         roleSelect.dataset.currentRole = newRole;
       }
-      
+
       // Reload after a delay to ensure database is updated
       setTimeout(() => {
         loadUsers();

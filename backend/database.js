@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  student_id_hash: {
+  type: String,
+  unique: true,
+  sparse: true
+ },
   phone_encrypted: {
     type: String,
     required: true

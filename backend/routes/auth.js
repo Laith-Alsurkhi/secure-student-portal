@@ -11,6 +11,14 @@ const authMiddleware = require('../middleware/auth');
 
 const { User, AuditLog } = require('../database');
 
+
+function hashStudentId(studentId) {
+  return crypto
+    .createHash('sha256')
+    .update(studentId.trim())
+    .digest('hex');
+}
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
@@ -57,21 +65,21 @@ const verifyTurnstile = async (token, remoteIp) => {
   }
 
   const response = await fetch(
-  'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: formData
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Turnstile verification service error');
   }
-);
 
-if (!response.ok) {
-  throw new Error('Turnstile verification service error');
-}
-
-return await response.json();
+  return await response.json();
 };
 
 // Signup
@@ -86,13 +94,20 @@ router.post('/signup', signupLimiter, async (req, res) => {
     if (!validator.isEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format' });
     }
+    if (!/^\d{9}$/.test(studentId)) {
+      return res.status(400).json({
+        error: 'Student ID must be exactly 9 digits'
+      });
+    }
 
     if (!validator.isLength(password, { min: 8 })) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    if (!validator.isMobilePhone(phone, 'any')) {
-      return res.status(400).json({ error: 'Invalid phone format' });
+    if (!/^07[789]\d{7}$/.test(phone)) {
+      return res.status(400).json({
+        error: 'Phone number must be a valid Jordanian number with 10 digits'
+      });
     }
 
     const sanitizedName = validator.escape(name);
@@ -102,6 +117,17 @@ router.post('/signup', signupLimiter, async (req, res) => {
 
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
+    }
+    const studentIdHash = hashStudentId(studentId);
+
+    const existingStudent = await User.findOne({
+      student_id_hash: studentIdHash
+    });
+
+    if (existingStudent) {
+      return res.status(409).json({
+        error: 'Student ID already registered'
+      });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -115,6 +141,7 @@ router.post('/signup', signupLimiter, async (req, res) => {
       student_id_encrypted: encryptedStudentId,
       phone_encrypted: encryptedPhone,
       password_hash: passwordHash,
+      student_id_hash: studentIdHash,
       role: 'user'
     });
 
@@ -137,20 +164,21 @@ router.post('/login', loginLimiter, async (req, res) => {
 
     const { email, password, turnstileToken } = req.body;
     if (!turnstileToken) {
-    return res.status(400).json({
-    error: 'Security verification is required'});
+      return res.status(400).json({
+        error: 'Security verification is required'
+      });
 
-}
-const turnstileResult = await verifyTurnstile(
-  turnstileToken,
-  req.ip
-);
+    }
+    const turnstileResult = await verifyTurnstile(
+      turnstileToken,
+      req.ip
+    );
 
-if (!turnstileResult.success) {
-  return res.status(403).json({
-    error: 'Security verification failed'
-  });
-} 
+    if (!turnstileResult.success) {
+      return res.status(403).json({
+        error: 'Security verification failed'
+      });
+    }
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
 
@@ -181,11 +209,11 @@ if (!turnstileResult.success) {
       { expiresIn: '24h' }
     );
     res.cookie('auth_token', token, {
-     httpOnly: true,
-     secure: process.env.NODE_ENV === 'production',
-     sameSite: 'strict',
-     maxAge: 24 * 60 * 60 * 1000
-   });
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000
+    });
     await AuditLog.create({
       action: 'login',
       user_email: sanitizedEmail,

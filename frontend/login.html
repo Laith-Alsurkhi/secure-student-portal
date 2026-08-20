@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <meta charset="UTF-8">
@@ -7,6 +8,7 @@
   <title>Login - Secure Student Portal</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <!-- Navigation -->
   <nav>
@@ -27,33 +29,21 @@
       <div id="successMessage" class="message success"></div>
       <div id="errorMessage" class="message error"></div>
 
-     
+
 
       <!-- Login Form -->
       <form id="loginForm">
         <div class="form-group">
           <label for="email">Email Address</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            placeholder="Enter your email" 
-            required
-          >
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Enter your password" 
-            required
-          >
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
         </div>
 
-         <div class="cf-turnstile" data-sitekey="0x4AAAAAAEVcAOyCuG0hHNaE"></div>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEVcAOyCuG0hHNaE"></div>
 
         <button type="submit" class="btn" style="width: 100%; padding: 1rem;">Login</button>
       </form>
@@ -61,13 +51,14 @@
       <!-- Links -->
       <div style="margin-top: 2rem; text-align: center;">
         <p>
-          Don't have an account? 
+          Don't have an account?
           <a href="signup.html" style="color: #3498db; text-decoration: none; font-weight: bold;">Sign up here</a>
         </p>
       </div>
 
       <!-- Test Credentials -->
-      <div style="background-color: #e3f2fd; padding: 1rem; border-radius: 4px; margin-top: 1.5rem; border-left: 4px solid #2196F3;">
+      <div
+        style="background-color: #e3f2fd; padding: 1rem; border-radius: 4px; margin-top: 1.5rem; border-left: 4px solid #2196F3;">
         <strong>Test Credentials:</strong><br>
         Email: admin@portal.com<br>
         Password: Admin@12345
@@ -77,7 +68,7 @@
 
   <!-- Footer -->
   <footer>
-    <p>&copy; 2024 Secure Student Portal - Application Security Course</p>
+    <p>&copy; 2026 Secure Student Portal - Application Security Course</p>
   </footer>
 
   <!-- JavaScript -->
@@ -92,30 +83,31 @@
 
       const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
-    if (!turnstileToken) {
-      document.getElementById('errorMessage').textContent ='Please complete the security verification.';
-       document.getElementById('errorMessage').style.display = 'block';
-         return;
-        }
+      if (!turnstileToken) {
+        document.getElementById('errorMessage').textContent = 'Please complete the security verification.';
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+      }
 
       try {
         const csrfResponse = await fetch('/api/csrf-token', {
-  method: 'GET',
-  credentials: 'include'
-});
+          method: 'GET',
+          credentials: 'include'
+        });
 
-if (!csrfResponse.ok) {
-  throw new Error('Failed to get CSRF token');
-}
+        if (!csrfResponse.ok) {
+          throw new Error('Failed to get CSRF token');
+        }
 
-const csrfData = await csrfResponse.json();
+        const csrfData = await csrfResponse.json();
         const response = await fetch('/api/auth/login', {
           method: 'POST',
-         headers: {
-  'Content-Type': 'application/json',
-  'x-csrf-token': csrfData.csrfToken
-},
-          credentials: 'include',body: JSON.stringify({email,password,turnstileToken})});
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': csrfData.csrfToken
+          },
+          credentials: 'include', body: JSON.stringify({ email, password, turnstileToken })
+        });
 
         const data = await response.json();
 
@@ -139,15 +131,16 @@ const csrfData = await csrfResponse.json();
           // Security: Generic error message
           document.getElementById('errorMessage').textContent = data.error || 'Login failed. Please try again.';
           document.getElementById('errorMessage').style.display = 'block';
-          if (window.turnstile) {turnstile.reset();}
+          if (window.turnstile) { turnstile.reset(); }
         }
       } catch (error) {
         console.error('Login error:', error);
         document.getElementById('errorMessage').textContent = 'Connection error. Please try again.';
         document.getElementById('errorMessage').style.display = 'block';
-        if (window.turnstile) {turnstile.reset();}
+        if (window.turnstile) { turnstile.reset(); }
       }
     });
   </script>
 </body>
+
 </html>
